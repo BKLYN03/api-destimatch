@@ -50,9 +50,8 @@ public class UserResource {
     @POST
     @Path("/register")
     public Response createUser(NewUserRequest newRequest) {
-        if (newRequest == null) {
+        if (newRequest == null)
             throw new ValidationException("The request cannot be null.");
-        }
 
         var user = userService.createUser(
                 newRequest.getName(),

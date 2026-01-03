@@ -27,7 +27,7 @@ public class TagService {
         List<TagModel> foundTags = tagRepository.find("category", category).list();
 
         if (foundTags.isEmpty())
-            throw new NotFoundException("Aucun tag trouvé pour la catégorie: " + category);
+            throw new NotFoundException("No tag was found for the category " + category);
 
         return foundTags;
     }

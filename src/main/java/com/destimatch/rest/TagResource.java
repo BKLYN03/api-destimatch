@@ -41,7 +41,7 @@ public class TagResource {
             List<TagModel> tags = tagService.getTagsByCategory(category);
             return Response.ok(tags).build();
         } catch (IllegalArgumentException e) {
-            throw new NotFoundException("La catégorie '" + categoryStr + "' n'est pas valide.");
+            throw new NotFoundException("The category '" + categoryStr + "' is not valid.");
         }
     }
 }

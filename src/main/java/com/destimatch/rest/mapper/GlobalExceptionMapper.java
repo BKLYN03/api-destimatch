@@ -33,7 +33,7 @@ public class GlobalExceptionMapper {
     @ServerExceptionMapper
     public Response handleFallBack(Throwable e) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(new ErrorInfo("Une erreur inattendue est survenue."))
+                .entity(new ErrorInfo("An error occurred."))
                 .build();
     }
 }
