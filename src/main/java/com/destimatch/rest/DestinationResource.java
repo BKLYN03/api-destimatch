@@ -3,10 +3,13 @@ package com.destimatch.rest;
 import com.destimatch.common.api.request.CreateDestinationRequest;
 import com.destimatch.common.api.response.DestinationResponse;
 import com.destimatch.service.DestinationService;
+import com.destimatch.service.MatchingService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
 
@@ -17,6 +20,10 @@ public class DestinationResource {
 
     @Inject
     DestinationService destinationService;
+    @Inject
+    MatchingService matchingService;
+    @Inject
+    JsonWebToken jwt;
 
     @POST
     public Response createDestination(CreateDestinationRequest request) {
@@ -24,6 +31,14 @@ public class DestinationResource {
         return Response.status(Response.Status.CREATED)
                 .entity(destination)
                 .build();
+    }
+
+    @GET
+    @Path("/match")
+    @RolesAllowed("user")
+    public Response getMatches() {
+        String email = jwt.getName();
+        return Response.ok(matchingService.findMatchesForUser(email)).build();
     }
 
     @GET
