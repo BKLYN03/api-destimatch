@@ -1,10 +1,12 @@
 package com.destimatch.common.utils;
 
 import com.destimatch.common.exception.ValidationException;
-import com.destimatch.model.UserModel;
+import com.destimatch.entity.UserEntity;
 import io.smallrye.jwt.build.Jwt;
 
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class Helpers {
@@ -54,7 +56,10 @@ public class Helpers {
         }
     }
 
-    public static String generateUserJWT(UserModel user) {
+    public static String generateUserJWT(UserEntity user) {
+
+        // Set<String> roles = new HashSet<>();
+
         return Jwt.issuer("https://destimatch.com")
                 .upn(user.getEmail())
                 .groups("user")

@@ -1,6 +1,8 @@
 package com.destimatch.common.api.response;
 
+import com.destimatch.common.utils.BudgetLevel;
 import com.destimatch.common.utils.Location;
+import com.destimatch.common.utils.TravelStyle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +16,10 @@ public class UserResponse {
     private String id;
     private String name;
     private String email;
-    private Location location;
     private String phone;
+    private Location location;
     private List<String> preferences;
+    private TravelStyle travelStyle;
+    private BudgetLevel budgetLevel;
+    private List<String> wishList;
 }

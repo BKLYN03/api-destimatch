@@ -1,7 +1,7 @@
 package com.destimatch.rest;
 
+import com.destimatch.common.api.response.TagResponse;
 import com.destimatch.common.utils.Category;
-import com.destimatch.model.TagModel;
 import com.destimatch.service.TagService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -18,16 +18,10 @@ public class TagResource {
     @Inject
     TagService tagService;
 
-//    @GET
-//    public Response getAllTags() {
-//        List<TagModel> tags = tagService.getAllTags();
-//        return Response.ok(tags).build();
-//    }
-
     @GET
     @Path("/count")
     public Response getTagsNumber() {
-        int count = tagService.getTagsCount();
+        long count = tagService.getTagsCount();
         return Response.ok(count).build();
     }
 
@@ -38,7 +32,7 @@ public class TagResource {
 
         try {
             Category category = Category.valueOf(categoryStr.toUpperCase());
-            List<TagModel> tags = tagService.getTagsByCategory(category);
+            List<TagResponse> tags = tagService.getTagsByCategory(category);
             return Response.ok(tags).build();
         } catch (IllegalArgumentException e) {
             throw new NotFoundException("The category '" + categoryStr + "' is not valid.");

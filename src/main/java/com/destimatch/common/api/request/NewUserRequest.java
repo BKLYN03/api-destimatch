@@ -14,6 +14,6 @@ public class NewUserRequest {
     private String name;
     private String email;
     private String password;
-    private Location location;
     private String phone;
+    private Location location;
 }

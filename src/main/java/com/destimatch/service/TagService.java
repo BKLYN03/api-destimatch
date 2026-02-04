@@ -1,13 +1,16 @@
 package com.destimatch.service;
 
+import com.destimatch.common.api.response.TagResponse;
 import com.destimatch.common.utils.Category;
-import com.destimatch.model.TagModel;
+import com.destimatch.converter.TagConverter;
+import com.destimatch.entity.TagEntity;
 import com.destimatch.repository.TagRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class TagService {
@@ -15,20 +18,19 @@ public class TagService {
     @Inject
     TagRepository tagRepository;
 
-    public List<TagModel> getAllTags() {
-        return tagRepository.listAll();
+    public List<TagResponse> getAllTags() {
+        return tagRepository.listAll().stream()
+                .map(TagConverter::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public int getTagsCount() {
-        return tagRepository.listAll().size();
+    public long getTagsCount() {
+        return tagRepository.count();
     }
 
-    public List<TagModel> getTagsByCategory(Category category) {
-        List<TagModel> foundTags = tagRepository.find("category", category).list();
-
-        if (foundTags.isEmpty())
-            throw new NotFoundException("No tag was found for the category " + category);
-
-        return foundTags;
+    public List<TagResponse> getTagsByCategory(Category category) {
+        return tagRepository.list("category", category)
+                .stream().map(TagConverter::toResponse)
+                .collect(Collectors.toList());
     }
 }

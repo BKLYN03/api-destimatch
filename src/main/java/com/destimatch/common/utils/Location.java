@@ -11,9 +11,17 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Location {
-    private String city;
-    private String country;
+
+    // Indispensable pour calculer les distances
+    private Double latitude;
+    private Double longitude;
+
+    private String city; // ex: "Paris"
+    private String country; // ex: "France"
+
     @BsonProperty("country_code")
-    private String countryCode;
-    private Continent continent;
+    private String countryCode; // ex: "FR"
+
+    private Continent continent; // ex: EUROPE
+
 }

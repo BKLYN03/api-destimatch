@@ -1,11 +1,11 @@
 package com.destimatch.common.utils;
 
 public enum Continent {
-    EUROPE,
     AFRICA,
-    OCEANIA,
+    ANTARCTICA,
+    ASIA,
+    EUROPE,
     NORTH_AMERICA,
-    SOUTH_AMERICA,
-    CENTRAL_AMERICA,
-    ASIA
+    OCEANIA,
+    SOUTH_AMERICA
 }
