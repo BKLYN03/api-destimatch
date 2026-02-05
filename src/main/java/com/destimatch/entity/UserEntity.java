@@ -34,11 +34,13 @@ public class UserEntity extends PanacheMongoEntity {
     @BsonProperty("location")
     private Location location;
 
+    @BsonProperty("roles")
+    private List<String> roles = new ArrayList<>();
+
     /* ------- PROFIL UTILISATEUR ------- */
 
     // Liste des tags préférés
     @BsonProperty("preferences")
-    @Nullable
     private List<String> preferences = new ArrayList<>();
 
     // Qui voyage ? (Enum stocké)
@@ -51,9 +53,13 @@ public class UserEntity extends PanacheMongoEntity {
 
     /* ------- COMPORTEMENT ------- */
 
-    // Liste des IDs des destinations aimées
-    @BsonProperty("wish_list")
-    private List<String> wishList = new ArrayList<>();
+    @BsonProperty("preferred_continent")
+    private String preferredContinent;
 
     public UserEntity() {}
+
+    public void addRole(String role) {
+        if (!this.roles.contains(role))
+            this.roles.add(role);
+    }
 }

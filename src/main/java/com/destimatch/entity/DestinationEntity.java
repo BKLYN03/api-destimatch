@@ -1,6 +1,7 @@
 package com.destimatch.entity;
 
 import com.destimatch.common.utils.Location;
+import com.destimatch.common.utils.TravelStyle;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.AllArgsConstructor;
@@ -47,4 +48,7 @@ public class DestinationEntity extends PanacheMongoEntity {
     // Liste des mois conseillés (1=Janvier, 12=Décembre)
     @BsonProperty("best_months")
     private List<Integer> bestMonths;
+
+    @BsonProperty("compatible_styles")
+    private List<TravelStyle> compatibleStyles = new ArrayList<>();
 }

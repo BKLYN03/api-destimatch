@@ -12,10 +12,10 @@ public class UserConverter {
                 entity.getEmail(),
                 entity.getPhone(),
                 entity.getLocation(),
+                entity.getRoles(),
                 entity.getPreferences(),
                 entity.getTravelStyle(),
-                entity.getBudgetLevel(),
-                entity.getWishList()
+                entity.getBudgetLevel()
         );
     }
 }

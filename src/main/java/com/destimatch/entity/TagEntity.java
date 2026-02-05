@@ -20,7 +20,7 @@ public class TagEntity extends PanacheMongoEntity {
     private String name;
 
     @BsonProperty("category")
-    private Category category;
+    private String category;
 
     @BsonProperty("description")
     private String description;

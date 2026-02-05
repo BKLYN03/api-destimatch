@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 @Getter
 @Setter
@@ -16,4 +17,7 @@ public class NewUserRequest {
     private String password;
     private String phone;
     private Location location;
+
+    @BsonProperty("admin_secret")
+    private String adminSecret;
 }

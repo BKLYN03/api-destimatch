@@ -23,5 +23,4 @@ public class Location {
     private String countryCode; // ex: "FR"
 
     private Continent continent; // ex: EUROPE
-
 }

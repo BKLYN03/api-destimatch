@@ -1,6 +1,7 @@
 package com.destimatch.common.api.request;
 
 import com.destimatch.common.utils.Location;
+import com.destimatch.common.utils.TravelStyle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,4 +18,6 @@ public class CreateDestinationRequest {
     private List<String> tags;
     private Double averageDailyCost;
     private List<Integer> bestMonths; // ex: [1, 2, 12] pour l'hiver
+
+    private List<TravelStyle> compatibleStyles;
 }

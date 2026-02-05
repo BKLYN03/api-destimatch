@@ -12,7 +12,7 @@ public class TagConverter {
         return new TagResponse(
                 tagEntity.id.toString(),
                 tagEntity.getName(),
-                tagEntity.getCategory().name(),
+                tagEntity.getCategory(),
                 tagEntity.getDescription(),
                 tagEntity.getColorHex()
         );

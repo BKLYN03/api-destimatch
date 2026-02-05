@@ -57,12 +57,9 @@ public class Helpers {
     }
 
     public static String generateUserJWT(UserEntity user) {
-
-        // Set<String> roles = new HashSet<>();
-
         return Jwt.issuer("https://destimatch.com")
                 .upn(user.getEmail())
-                .groups("user")
+                .groups(new HashSet<>(user.getRoles()))
                 .claim("user_id", user.id.toString())
                 .expiresIn(Duration.ofHours(24))
                 .sign();

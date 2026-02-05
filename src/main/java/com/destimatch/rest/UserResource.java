@@ -2,6 +2,7 @@ package com.destimatch.rest;
 
 import com.destimatch.common.api.request.LoginRequest;
 import com.destimatch.common.api.request.NewUserRequest;
+import com.destimatch.common.api.request.UpdatePreferencesRequest;
 import com.destimatch.common.api.request.UpdateProfileRequest;
 import com.destimatch.common.api.response.LoginResponse;
 import com.destimatch.common.exception.ValidationException;
@@ -26,6 +27,14 @@ public class UserResource {
     @Inject
     JsonWebToken jwt;
 
+    @GET
+    @Path("/check-admin")
+    @RolesAllowed("admin")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String checkAdminAccess() {
+        return "Succès: Tu as accès à la zone Admin!";
+    }
+
     @POST
     @Path("/auth/login")
     public Response login(LoginRequest loginRequest) {
@@ -39,7 +48,7 @@ public class UserResource {
 
     @GET
     @Path("/auth/refresh")
-    @RolesAllowed("user")
+    @RolesAllowed({"user", "admin"})
     public Response refreshToken() {
         String email = jwt.getName();
         var user = userService.getUserByEmail(email);
@@ -65,42 +74,43 @@ public class UserResource {
 
     @PUT
     @Path("/profile")
-    @RolesAllowed("user")
+    @RolesAllowed({"user", "admin"})
     public Response updateProfile(UpdateProfileRequest updateProfileRequest) {
         String email = jwt.getName();
         UserEntity updatedUser = userService.updateProfile(email, updateProfileRequest);
         return Response.ok(UserConverter.toResponse(updatedUser)).build();
     }
 
+    @PUT
+    @Path("/preferences")
+    @RolesAllowed({"user", "admin"})
+    public Response updatePreferences(UpdatePreferencesRequest request) {
+        String email = jwt.getName();
+        if (email == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        try {
+            userService.updateUserPreferences(email, request);
+            var updatedUser = userService.getUserByEmail(email);
+            return Response.ok(UserConverter.toResponse(updatedUser)).build();
+        } catch (RuntimeException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
+                    .build();
+        }
+    }
+
     @GET
     @Path("/profile")
-    @RolesAllowed("user")
+    @RolesAllowed({"user", "admin"})
     public Response getProfile() {
         String email = jwt.getName();
         var user = userService.getUserByEmail(email);
         return Response.ok(UserConverter.toResponse(user)).build();
     }
 
-    @POST
-    @Path("/wishlist/{id}")
-    @RolesAllowed("user")
-    public Response addToWishlist(@PathParam("id") String destinationId) {
-        String email = jwt.getName();
-        userService.addToWishlist(email, destinationId);
-        return Response.ok().build();
-    }
-
     @DELETE
-    @Path("/wishlist/{id}")
-    @RolesAllowed("user")
-    public Response removeFromWishlist(@PathParam("id") String destinationId) {
-        String email = jwt.getName();
-        userService.removeFromWishlist(email, destinationId);
-        return Response.ok().build();
-    }
-
-    @DELETE
-    @RolesAllowed("user")
+    @RolesAllowed({"user", "admin"})
     public Response deleteAccount() {
         String email = jwt.getName();
         userService.deleteUser(email);

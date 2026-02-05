@@ -32,6 +32,7 @@ public class DestinationService {
         dest.setTags(request.getTags());
         dest.setAverageDailyCost(request.getAverageDailyCost());
         dest.setBestMonths(request.getBestMonths());
+        dest.setCompatibleStyles(request.getCompatibleStyles());
 
         // Initialisation des stats sociales
         dest.setRating(0.0);
@@ -60,5 +61,30 @@ public class DestinationService {
             throw new NotFoundException("Destination introuvable avec l'ID : " + id);
 
         return DestinationConverter.toResponse(dest);
+    }
+
+    public DestinationResponse updateDestination(String id, CreateDestinationRequest request) {
+        DestinationEntity dest = destinationRepository.findById(new ObjectId(id));
+        if (dest == null)
+            throw new NotFoundException("Destination introuvable.");
+
+        dest.setName(request.getName());
+        dest.setDescription(request.getDescription());
+        dest.setImages(request.getImages());
+        dest.setLocation(request.getLocation());
+        dest.setTags(request.getTags());
+        dest.setAverageDailyCost(request.getAverageDailyCost());
+
+        dest.setBestMonths(request.getBestMonths());
+        dest.setCompatibleStyles(request.getCompatibleStyles());
+
+        destinationRepository.update(dest);
+        return DestinationConverter.toResponse(dest);
+    }
+
+    public void deleteDestination(String id) {
+        boolean deleted = destinationRepository.deleteById(new ObjectId(id));
+        if (!deleted)
+            throw new NotFoundException("Destination introuvable");
     }
 }

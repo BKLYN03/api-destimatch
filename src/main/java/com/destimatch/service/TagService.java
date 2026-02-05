@@ -29,7 +29,7 @@ public class TagService {
     }
 
     public List<TagResponse> getTagsByCategory(Category category) {
-        return tagRepository.list("category", category)
+        return tagRepository.list("category", category.name())
                 .stream().map(TagConverter::toResponse)
                 .collect(Collectors.toList());
     }

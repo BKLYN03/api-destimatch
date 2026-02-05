@@ -1,6 +1,7 @@
 package com.destimatch.service;
 
 import com.destimatch.common.api.request.NewUserRequest;
+import com.destimatch.common.api.request.UpdatePreferencesRequest;
 import com.destimatch.common.api.request.UpdateProfileRequest;
 import com.destimatch.common.exception.ConflictException;
 import com.destimatch.common.exception.ValidationException;
@@ -12,14 +13,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class UserService {
 
     @Inject
     UserRepository userRepository;
+
+    @ConfigProperty(name = "destimatch.admin.secret")
+    String adminSecretConfig;
 
     public String authenticate(String email, String password) {
         var foundUser = userRepository.find("email", email).firstResult();
@@ -34,9 +40,6 @@ public class UserService {
         Helpers.validatePassword(request.getPassword());
         Helpers.validateUserEmail(request.getEmail());
 
-        // if (userRepository.find("name", name).firstResult() != null)
-            // throw new ConflictException("The full name you provided already exists.");
-
         if (userRepository.find("email", request.getEmail()).firstResult() != null)
             throw new ConflictException("The email you provided has already been used.");
 
@@ -48,7 +51,15 @@ public class UserService {
         user.setLocation(request.getLocation());
 
         user.setPreferences(new ArrayList<>());
-        user.setWishList(new ArrayList<>());
+
+        List<String> roles = new ArrayList<>();
+        roles.add("user");
+        if (request.getAdminSecret() != null
+                && adminSecretConfig != null
+                && request.getAdminSecret().trim().equals(adminSecretConfig.trim())) {
+            roles.add("admin");
+        }
+        user.setRoles(roles);
 
         userRepository.persist(user);
         return user;
@@ -83,6 +94,23 @@ public class UserService {
         return user;
     }
 
+    public void updateUserPreferences(String email, UpdatePreferencesRequest request) {
+        UserEntity user = getUserByEmail(email);
+        if (user == null)
+            throw new NotFoundException("Utilisateur introuvable.");
+
+        if (request.getTags() != null)
+            user.setPreferences(request.getTags());
+
+        if (request.getTravelStyle() != null)
+            user.setTravelStyle(request.getTravelStyle());
+
+        if (request.getBudgetLevel() != null)
+            user.setBudgetLevel(request.getBudgetLevel());
+
+        userRepository.update(user);
+    }
+
     public UserEntity getUserByEmail(String email) {
         if (email == null)
             throw new ValidationException("Email cannot be null.");
@@ -92,27 +120,6 @@ public class UserService {
             throw new NotFoundException("User with email " + email + " not found.");
 
         return user;
-    }
-
-    public void addToWishlist(String email, String destinationId) {
-        UserEntity user = getUserByEmail(email);
-
-        if (user.getWishList() == null || user.getWishList().isEmpty())
-            user.setWishList(new ArrayList<>());
-
-        if (!user.getWishList().contains(destinationId)) {
-            user.getWishList().add(destinationId);
-            userRepository.update(user);
-        }
-    }
-
-    public void removeFromWishlist(String email, String destinationId) {
-        UserEntity user = getUserByEmail(email);
-
-        if (user.getWishList() != null && user.getWishList().contains(destinationId)) {
-            user.getWishList().remove(destinationId);
-            userRepository.update(user);
-        }
     }
 
     public void deleteUser(String email) {
