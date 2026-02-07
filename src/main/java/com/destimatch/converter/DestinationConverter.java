@@ -15,11 +15,15 @@ public class DestinationConverter {
                 entity.getDescription(),
                 entity.getImages(),
                 entity.getLocation(),
-                entity.getTags(),
+                entity.getOfficialTags(),
+                entity.getAiTags(),
+                entity.getAiSummary(),
                 entity.getAverageDailyCost(),
+                entity.getBudgetLevel() != null ? entity.getBudgetLevel().name() : null,
                 entity.getRating(),
                 entity.getReviewCount(),
-                entity.getBestMonths()
+                entity.getBestMonths(),
+                entity.getCompatibleStyles()
         );
     }
 }

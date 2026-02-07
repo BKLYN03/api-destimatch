@@ -19,8 +19,9 @@ public class UserResponse {
     private String email;
     private String phone;
     private Location location;
-    private List<String> roles = new ArrayList<>();
+    private List<String> roles;
     private List<String> preferences;
     private TravelStyle travelStyle;
     private BudgetLevel budgetLevel;
+    private List<String> favoriteContinents;
 }

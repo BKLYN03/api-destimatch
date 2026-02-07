@@ -5,5 +5,6 @@ public enum TravelStyle {
     COUPLE,
     FAMILY,
     FRIENDS,
-    BUSINESS
+    BUSINESS,
+    LUXURY
 }

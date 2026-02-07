@@ -34,58 +34,58 @@ public class MatchingService {
 
         List<DestinationEntity> destinations = destinationRepository.listAll();
 
-        String targetContinent = (safeCriteria.getContinent() != null)
-                ? safeCriteria.getContinent() : user.getPreferredContinent();
-
-        if (targetContinent != null && !targetContinent.isBlank()) {
-            destinations = destinations.stream()
-                    .filter(d -> d.getLocation() != null
-                            && targetContinent.equalsIgnoreCase(String.valueOf(d.getLocation().getContinent())))
-                    .toList();
-        }
+        destinations = destinations.stream()
+                .filter(d -> isContinentMatch(user, safeCriteria, d))
+                .toList();
 
         return destinations.stream()
                 .map(dest -> {
                     int score = calculateScore(user, dest, safeCriteria);
                     return new DestinationMatchResponse(DestinationConverter.toResponse(dest), score);
                 })
-                .sorted(Comparator.comparingInt(DestinationMatchResponse::getMatchScore).reversed())
+                .sorted(Comparator.comparingInt(DestinationMatchResponse::getMatchScore).reversed()) // Le plus haut score en premier
                 .collect(Collectors.toList());
+    }
+
+    private boolean isContinentMatch(UserEntity user, SearchCriteria criteria, DestinationEntity dest) {
+        if (criteria.getContinent() != null && !criteria.getContinent().isBlank())
+            return dest.getLocation().getContinent().getLabel().equalsIgnoreCase(criteria.getContinent());
+
+        if (user.getFavoriteContinents() != null && !user.getFavoriteContinents().isEmpty())
+            return user.getFavoriteContinents().contains(dest.getLocation().getContinent());
+
+        return true;
     }
 
     private int calculateScore(UserEntity user, DestinationEntity dest, SearchCriteria criteria) {
         double totalScore = 0;
 
-        totalScore += calculateTagScore(user.getPreferences(), dest.getTags());
+        totalScore += calculateTagScore(user.getPreferences(), dest.getOfficialTags());
 
-        BudgetLevel targetBudget = (criteria.getBudget() != null)
-                ? criteria.getBudget()
-                : user.getBudgetLevel();
+        BudgetLevel targetBudget = (criteria.getBudget() != null) ? criteria.getBudget() : user.getBudgetLevel();
         totalScore += calculateBudgetScore(targetBudget, dest.getAverageDailyCost());
 
-        TravelStyle targetStyle = (criteria.getTravelStyle() != null)
-                ? criteria.getTravelStyle()
-                : user.getTravelStyle();
+        TravelStyle targetStyle = (criteria.getTravelStyle() != null) ? criteria.getTravelStyle() : user.getTravelStyle();
         totalScore += calculateStyleScore(targetStyle, dest.getCompatibleStyles());
 
-        int targetMonth = (criteria.getMonth() != null)
-                ? criteria.getMonth()
-                : LocalDate.now().getMonthValue();
+        int targetMonth = (criteria.getMonth() != null) ? criteria.getMonth() : LocalDate.now().getMonthValue();
         totalScore += calculateSeasonScore(dest.getBestMonths(), targetMonth);
 
         if (dest.getRating() != null)
-            totalScore += dest.getRating();
+            totalScore += dest.getRating() * 2;
 
         return (int) Math.round(totalScore);
     }
 
     private double calculateTagScore(List<String> userTags, List<String> destTags) {
         if (userTags == null || userTags.isEmpty())
-            return 20.0;
+            return 10.0;
         if (destTags == null || destTags.isEmpty())
             return 0.0;
 
-        long commonTags = userTags.stream().filter(destTags::contains).count();
+        long commonTags = userTags.stream()
+                .filter(tag -> destTags.stream().anyMatch(dt -> dt.equalsIgnoreCase(tag)))
+                .count();
 
         double ratio = (double) commonTags / userTags.size();
         return ratio * 40.0;
@@ -98,48 +98,41 @@ public class MatchingService {
         double maxBudget;
         switch (userBudget) {
             case ECO:
-                maxBudget = 80.0;
+                maxBudget = 60.0;
                 break;
             case MODERATE:
-                maxBudget = 180.0;
+                maxBudget = 160.0;
                 break;
             case HIGH:
-                maxBudget = 350.0;
+                maxBudget = 400.0;
                 break;
             case LUXURY:
-                return 25.0; // Le luxe n'a pas de limite
+                return 30.0; // Le luxe n'a pas de limite
             default:
-                return 25.0;
+                return 20.0;
         }
 
         // Si le coût est dans le budget → 100% des points (30 points)
         if (destCost <= maxBudget)
-            return 25.0;
+            return 30.0;
 
-        // Si ça dépasse, pénalité progressive
-        // Ex: Budget 100, Coût 120. Dépassement = 0.2 (20%)
         double overflowRatio = (destCost - maxBudget) / maxBudget;
-
-        // Si ça dépasse de plus de 50%, le score tombe à 0
-        // Sinon on réduit proportionnellement
-        if (overflowRatio >= 0.5)
-            return 0.0;
-
-        return 25.0 * (1.0 - (overflowRatio * 2));
+        double score = 30.0 * (1.0 - (overflowRatio * 2));
+        return Math.max(0, score);
     }
 
     private double calculateStyleScore(TravelStyle userStyle, List<TravelStyle> destStyles) {
         if (userStyle == null)
             return 10.0;
         if (destStyles == null || destStyles.isEmpty())
-            return 10.0;
+            return 5.0;
 
         return destStyles.contains(userStyle) ? 20.0 : 0.0;
     }
 
     private double calculateSeasonScore(List<Integer> bestMonths, int monthToCheck) {
         if (bestMonths == null || bestMonths.isEmpty())
-            return 15.0;
+            return 10.0;
 
         return bestMonths.contains(monthToCheck) ? 15.0 : 0.0;
     }

@@ -93,7 +93,7 @@ public class UserResource {
             userService.updateUserPreferences(email, request);
             var updatedUser = userService.getUserByEmail(email);
             return Response.ok(UserConverter.toResponse(updatedUser)).build();
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"error\": \"" + e.getMessage() + "\"}")
                     .build();

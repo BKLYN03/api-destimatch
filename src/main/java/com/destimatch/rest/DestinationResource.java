@@ -28,9 +28,24 @@ public class DestinationResource {
     JsonWebToken jwt;
 
     @GET
-    public Response getAllDestinations(@QueryParam("query") String query) {
-        List<DestinationResponse> destinations = destinationService.getAllDestinations(query);
-        return Response.ok(destinations).build();
+    public Response getAllDestinations() {
+        try  {
+            List<DestinationResponse> destinations = destinationService.getAllDestinations();
+            return Response.ok(destinations).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/search")
+    public Response search(@QueryParam("q") String query,
+                           @QueryParam("continent") String continent,
+                           @QueryParam("style") String style,
+                           @QueryParam("budget") String budget) {
+        List<DestinationResponse> results =
+                destinationService.searchDestinations(query, continent, style, budget);
+        return Response.ok(results).build();
     }
 
     @GET

@@ -11,4 +11,5 @@ public class UpdatePreferencesRequest {
     private List<String> tags;
     private TravelStyle travelStyle;
     private BudgetLevel budgetLevel;
+    private List<String> favoriteContinents;
 }

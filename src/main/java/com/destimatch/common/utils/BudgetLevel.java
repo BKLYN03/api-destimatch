@@ -16,4 +16,17 @@ public enum BudgetLevel {
     BudgetLevel(int value) {
         this.value = value;
     }
+
+    public static BudgetLevel fromCost(Double cost) {
+        if (cost == null)
+            return MODERATE;
+
+        if (cost < 60.0)
+            return ECO;
+        if (cost < 160.0)
+            return MODERATE;
+        if (cost < 400.0)
+            return HIGH;
+        return LUXURY;
+    }
 }

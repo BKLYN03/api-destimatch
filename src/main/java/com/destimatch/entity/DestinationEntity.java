@@ -1,17 +1,17 @@
 package com.destimatch.entity;
 
+import com.destimatch.common.utils.BudgetLevel;
 import com.destimatch.common.utils.Location;
 import com.destimatch.common.utils.TravelStyle;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @MongoEntity(collection = "destinations")
 @Getter
@@ -33,17 +33,14 @@ public class DestinationEntity extends PanacheMongoEntity {
     @BsonProperty("location")
     private Location location; // { lat, lon, city, etc. }
 
-    @BsonProperty("tags")
-    private List<String> tags = new ArrayList<>();
+    @BsonProperty("official_tags")
+    private List<String> officialTags = new ArrayList<>();
 
     @BsonProperty("average_daily_cost")
     private Double averageDailyCost;
 
-    @BsonProperty("rating")
-    private Double rating = 0.0;
-
-    @BsonProperty("review_count")
-    private Integer reviewCount = 0;
+    @BsonProperty("budget_level")
+    private BudgetLevel budgetLevel;
 
     // Liste des mois conseillés (1=Janvier, 12=Décembre)
     @BsonProperty("best_months")
@@ -51,4 +48,16 @@ public class DestinationEntity extends PanacheMongoEntity {
 
     @BsonProperty("compatible_styles")
     private List<TravelStyle> compatibleStyles = new ArrayList<>();
+
+    @BsonProperty("rating")
+    private Double rating = 0.0;
+
+    @BsonProperty("review_count")
+    private Integer reviewCount = 0;
+
+    @BsonProperty("ai_tags")
+    private Map<String, Double> aiTags = new HashMap<>();
+
+    @BsonProperty("ai_summary")
+    private String aiSummary;
 }

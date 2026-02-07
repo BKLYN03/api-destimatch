@@ -16,11 +16,15 @@ public class DestinationMatchResponse extends DestinationResponse {
                 original.getDescription(),
                 original.getImages(),
                 original.getLocation(),
-                original.getTags(),
+                original.getOfficialTags(),
+                original.getAiTags(),
+                original.getAiSummary(),
                 original.getAverageDailyCost(),
+                original.getBudgetLevel(),
                 original.getRating(),
                 original.getReviewCount(),
-                original.getBestMonths()
+                original.getBestMonths(),
+                original.getCompatibleStyles()
         );
         this.matchScore = score;
     }

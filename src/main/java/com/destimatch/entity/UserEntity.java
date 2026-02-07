@@ -1,6 +1,7 @@
 package com.destimatch.entity;
 
 import com.destimatch.common.utils.BudgetLevel;
+import com.destimatch.common.utils.Continent;
 import com.destimatch.common.utils.Location;
 import com.destimatch.common.utils.TravelStyle;
 import com.mongodb.lang.Nullable;
@@ -12,7 +13,9 @@ import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @MongoEntity(collection = "users")
 @Getter
@@ -53,8 +56,11 @@ public class UserEntity extends PanacheMongoEntity {
 
     /* ------- COMPORTEMENT ------- */
 
-    @BsonProperty("preferred_continent")
-    private String preferredContinent;
+    @BsonProperty("favorite_continents")
+    private Set<Continent> favoriteContinents = new HashSet<>();
+
+    @BsonProperty("favorite_destinations")
+    private List<String> favoriteDestinations = new ArrayList<>();
 
     public UserEntity() {}
 

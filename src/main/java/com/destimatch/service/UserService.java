@@ -5,6 +5,7 @@ import com.destimatch.common.api.request.UpdatePreferencesRequest;
 import com.destimatch.common.api.request.UpdateProfileRequest;
 import com.destimatch.common.exception.ConflictException;
 import com.destimatch.common.exception.ValidationException;
+import com.destimatch.common.utils.Continent;
 import com.destimatch.common.utils.Helpers;
 import com.destimatch.entity.UserEntity;
 import com.destimatch.repository.UserRepository;
@@ -17,6 +18,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserService {
@@ -41,7 +44,7 @@ public class UserService {
         Helpers.validateUserEmail(request.getEmail());
 
         if (userRepository.find("email", request.getEmail()).firstResult() != null)
-            throw new ConflictException("The email you provided has already been used.");
+            throw new ConflictException("Cet e-mail a déjà été utilisé.");
 
         UserEntity user = new UserEntity();
         user.setName(Helpers.cleanSpaces(request.getName()));
@@ -107,6 +110,15 @@ public class UserService {
 
         if (request.getBudgetLevel() != null)
             user.setBudgetLevel(request.getBudgetLevel());
+
+        if (request.getFavoriteContinents() != null) {
+            user.setFavoriteContinents(
+                    request.getFavoriteContinents().stream()
+                            .map(Continent::fromString)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet())
+            );
+        }
 
         userRepository.update(user);
     }
