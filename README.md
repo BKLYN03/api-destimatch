@@ -1,67 +1,73 @@
-# api-destimatch
+# ✈️ DestiMatch API
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+**DestiMatch** est un moteur de recommandation de voyage intelligent. Ce backend permet de connecter des voyageurs à leurs destinations idéales grâce à un algorithme de matching basé sur le budget, le style de voyage, la saisonnalité et les préférences thématiques.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+> *Ne cherchez plus où partir, DestiMatch le trouve pour vous.*
 
-## Running the application in dev mode
+---
 
-You can run your application in dev mode that enables live coding using:
+## 🚀 Fonctionnalités Clés
 
-```shell script
-./mvnw quarkus:dev
-```
+### 🧠 Core Engine (Le Cerveau)
+* **Algorithme de Matching** : Calcul de score de pertinence (0-100) en temps réel croisant 5 critères (Tags, Budget, Style, Saison, Avis).
+* **Auto-Catégorisation** : Calcul automatique du niveau de budget (`ECO`, `MODERATE`, `HIGH`, `LUXURY`) basé sur le coût journalier.
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+### 🌍 Gestion des Destinations
+* **Catalogue complet** : CRUD complet pour les administrateurs.
+* **Recherche Avancée** : Filtrage par continent, fourchette de prix et style de voyage.
+* **Système d'Avis (Reviews)** : Les utilisateurs peuvent noter et commenter. La note globale et le compteur d'avis sont recalculés mathématiquement à chaque ajout ou suppression.
 
-## Packaging and running the application
+### 👤 Gestion Utilisateurs
+* **Profilage Progressif** : L'utilisateur affine ses préférences (continents favoris, style solo/famille...) au fil de l'eau.
+* **Favoris** : Gestion de liste de souhaits (Wishlist).
+* **Sécurité** : Authentification JWT (JSON Web Token) et hachage des mots de passe (Bcrypt).
+* **Rôles** : Distinction stricte entre `User` et `Admin`.
 
-The application can be packaged using:
+---
 
-```shell script
-./mvnw package
-```
+## 🛠️ Stack Technique
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Ce projet est construit sur une architecture moderne et performante :
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+* **Langage** : Java 17+
+* **Framework** : [Quarkus](https://quarkus.io/) (Supersonic Subatomic Java)
+* **Base de Données** : MongoDB (via Panache ORM)
+* **Sécurité** : SmallRye JWT & Elytron
+* **Outils** : Maven, Postman (pour les tests API), Docker (optionnel pour la DB)
 
-If you want to build an _über-jar_, execute the following command:
+---
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+## 📚 Documentation API (Swagger UI)
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Ce projet intègre **OpenAPI (Swagger)** pour une documentation vivante et interactive.
+Plutôt que de lire des spécifications statiques, vous pouvez tester les endpoints directement via le navigateur.
 
-## Creating a native executable
+### Accéder à la documentation
+Une fois l'application lancée, rendez-vous sur :
 
-You can create a native executable using:
+👉 **[http://localhost:3000/q/swagger-ui/](http://localhost:3000/q/swagger-ui/)**
 
-```shell script
-./mvnw package -Dnative
-```
+### Aperçu des quelques endpoints
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+| Module | Méthode | Route | Description |
+| :--- | :--- | :--- | :--- |
+| **Auth** | `POST` | `/api/users/auth/login` | Récupération du Token JWT |
+| **Matching** | `POST` | `/api/destinations/match` | Algorithme de recommandation |
+| **Reviews** | `POST` | `/api/destinations/{id}/reviews` | Ajout d'un avis client |
+| **Admin** | `DELETE` | `/api/reviews/{id}` | Modération des commentaires |
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+> **Note :** Pour tester les routes sécurisées dans Swagger, cliquez sur le bouton "Authorize" et collez votre token (format : `Bearer eyJhbGciOi...`).
 
-You can then execute your native executable with: `./target/api-destimatch-1.0.0-SNAPSHOT-runner`
+---
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+## ⚙️ Installation et Lancement
 
-## Related Guides
+### Prérequis
+* JDK 17 ou supérieur
+* Maven (ou utiliser le wrapper `./mvnw` fourni)
+* Une instance MongoDB (locale ou Atlas)
 
-- MongoDB with Panache ([guide](https://quarkus.io/guides/mongodb-panache)): Simplify your persistence code for MongoDB via the active record or the repository pattern
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+### 1. Cloner le projet
+```bash
+git clone [https://github.com/votre-pseudo/destimatch-api.git](https://github.com/votre-pseudo/destimatch-api.git)
+cd destimatch-api
