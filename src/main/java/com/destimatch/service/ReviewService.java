@@ -72,4 +72,36 @@ public class ReviewService {
                 .map(ReviewConverter::toResponse)
                 .collect(Collectors.toList());
     }
+
+    public void deleteReview(String reviewId) {
+        ReviewEntity review = reviewRepository.findById(new ObjectId(reviewId));
+        if (review == null)
+            throw new NotFoundException("Avis introuvable.");
+
+        DestinationEntity dest = destinationRepository.findById(new ObjectId(review.getDestinationId()));
+        if (dest != null)
+            recalculateRatingAfterDeletion(dest, review.getRating());
+
+        reviewRepository.delete(review);
+    }
+
+    private void recalculateRatingAfterDeletion(DestinationEntity dest, int ratingToRemove) {
+        double currentTotal = dest.getRating() * dest.getReviewCount();
+        int newCount = dest.getReviewCount() - 1;
+
+        if (newCount <= 0) {
+            dest.setRating(0.0);
+            dest.setReviewCount(0);
+        } else {
+            double newTotal = currentTotal - ratingToRemove;
+            double newAverage = newTotal / newCount;
+
+            newAverage = Math.round(newAverage * 10.0) / 10.0;
+
+            dest.setRating(Math.max(0.0, newAverage));
+            dest.setReviewCount(newCount);
+        }
+
+        destinationRepository.update(dest);
+    }
 }

@@ -61,7 +61,7 @@ public class Helpers {
                 .upn(user.getEmail())
                 .groups(new HashSet<>(user.getRoles()))
                 .claim("user_id", user.id.toString())
-                .expiresIn(Duration.ofHours(24))
+                .expiresIn(Duration.ofHours(72))
                 .sign();
     }
 }
