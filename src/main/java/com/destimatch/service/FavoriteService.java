@@ -43,10 +43,10 @@ public class FavoriteService {
     public void addFavorite(String email, String destinationId) {
         UserEntity user = userRepository.find("email", email).firstResult();
         if (user == null)
-            throw  new NotFoundException("Utilisateur introuvable.");
+            throw new NotFoundException("Utilisateur introuvable.");
 
         if (destinationRepository.findById(new ObjectId(destinationId)) == null)
-            throw new NotFoundException("Destination introuvable");
+            throw new NotFoundException("Destination introuvable.");
 
         if (favoriteRepository.find(user.id.toString(), destinationId) == null) {
             FavoriteEntity newFav = new FavoriteEntity(user.id.toString(), destinationId);

@@ -26,18 +26,16 @@ public class FavoriteResource {
     }
 
     @POST
-    @Path("/{destinationId}")
     @RolesAllowed("user")
-    public Response addFavorite(@PathParam("destinationId") String destinationId) {
+    public Response addFavorite(@QueryParam("destination_id") String destinationId) {
         favoriteService.addFavorite(jwt.getName(), destinationId);
         return Response.status(Response.Status.CREATED)
                 .entity("{\"message\": \"Ajouté aux favoris\"}").build();
     }
 
     @DELETE
-    @Path("/{destinationId}")
     @RolesAllowed("user")
-    public Response removeFavorite(@PathParam("destinationId") String destinationId) {
+    public Response removeFavorite(@QueryParam("destination_id") String destinationId) {
         favoriteService.removeFavorite(jwt.getName(), destinationId);
         return Response.ok("{\"message\": \"Retiré des favoris\"}").build();
     }

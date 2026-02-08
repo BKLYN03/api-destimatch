@@ -59,9 +59,6 @@ public class UserEntity extends PanacheMongoEntity {
     @BsonProperty("favorite_continents")
     private Set<Continent> favoriteContinents = new HashSet<>();
 
-    @BsonProperty("favorite_destinations")
-    private List<String> favoriteDestinations = new ArrayList<>();
-
     public UserEntity() {}
 
     public void addRole(String role) {

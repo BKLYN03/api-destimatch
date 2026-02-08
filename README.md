@@ -58,16 +58,25 @@ Une fois l'application lancée, rendez-vous sur :
 
 > **Note :** Pour tester les routes sécurisées dans Swagger, cliquez sur le bouton "Authorize" et collez votre token (format : `Bearer eyJhbGciOi...`).
 
----
+[//]: # (---)
 
-## ⚙️ Installation et Lancement
+[//]: # ()
+[//]: # (## ⚙️ Installation et Lancement)
 
-### Prérequis
-* JDK 17 ou supérieur
-* Maven (ou utiliser le wrapper `./mvnw` fourni)
-* Une instance MongoDB (locale ou Atlas)
+[//]: # ()
+[//]: # (### Prérequis)
 
-### 1. Cloner le projet
-```bash
-git clone [https://github.com/votre-pseudo/destimatch-api.git](https://github.com/votre-pseudo/destimatch-api.git)
-cd destimatch-api
+[//]: # (* JDK 17 ou supérieur)
+
+[//]: # (* Maven &#40;ou utiliser le wrapper `./mvnw` fourni&#41;)
+
+[//]: # (* Une instance MongoDB &#40;locale ou Atlas&#41;)
+
+[//]: # ()
+[//]: # (### 1. Cloner le projet)
+
+[//]: # (```bash)
+
+[//]: # (git clone [https://github.com/votre-pseudo/destimatch-api.git]&#40;https://github.com/votre-pseudo/destimatch-api.git&#41;)
+
+[//]: # (cd destimatch-api)
