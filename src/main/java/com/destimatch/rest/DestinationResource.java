@@ -10,7 +10,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.bson.types.ObjectId;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
@@ -41,10 +40,11 @@ public class DestinationResource {
     @Path("/search")
     public Response search(@QueryParam("q") String query,
                            @QueryParam("continent") String continent,
+                           @QueryParam("tag") String tag,
                            @QueryParam("style") String style,
                            @QueryParam("budget") String budget) {
         List<DestinationResponse> results =
-                destinationService.searchDestinations(query, continent, style, budget);
+                destinationService.searchDestinations(query, continent, tag, style, budget);
         return Response.ok(results).build();
     }
 

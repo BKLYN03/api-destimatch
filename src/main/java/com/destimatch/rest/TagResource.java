@@ -1,41 +1,28 @@
 package com.destimatch.rest;
 
-import com.destimatch.common.api.response.TagResponse;
-import com.destimatch.common.utils.Category;
-import com.destimatch.service.TagService;
+import com.destimatch.service.DestinationService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.util.Collections;
 import java.util.List;
 
 @Path("/api/tags")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class TagResource {
 
     @Inject
-    TagService tagService;
+    DestinationService destinationService;
 
     @GET
-    @Path("/count")
-    public Response getTagsNumber() {
-        long count = tagService.getTagsCount();
-        return Response.ok(count).build();
-    }
-
-    @GET
-    public Response getTags(@QueryParam("category") String categoryStr) {
-        if (categoryStr == null || categoryStr.isEmpty())
-            return Response.ok(tagService.getAllTags()).build();
-
-        try {
-            Category category = Category.valueOf(categoryStr.toUpperCase());
-            List<TagResponse> tags = tagService.getTagsByCategory(category);
-            return Response.ok(tags).build();
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException("The category '" + categoryStr + "' is not valid.");
-        }
+    @PermitAll
+    public Response getAllTags() {
+        List<String> tags = destinationService.getAvailableTags();
+        return Response.ok(tags).build();
     }
 }

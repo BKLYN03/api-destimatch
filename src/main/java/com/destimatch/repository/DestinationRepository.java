@@ -8,7 +8,10 @@ import io.quarkus.mongodb.panache.PanacheMongoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static io.quarkus.mongodb.panache.PanacheMongoEntityBase.mongoCollection;
 
 @ApplicationScoped
 public class DestinationRepository implements PanacheMongoRepository<DestinationEntity> {
@@ -17,21 +20,30 @@ public class DestinationRepository implements PanacheMongoRepository<Destination
         return list("tags", tagName);
     }
 
-    public List<DestinationEntity> search(String query, Continent continent, TravelStyle travelStyle,
-                                          BudgetLevel budgetLevel) {
+    public List<String> getAllDistinctTags() {
+        return mongoCollection().distinct("official_tags", String.class)
+                .into(new ArrayList<>());
+    }
+
+    public List<DestinationEntity> search(String query, Continent continent, String tag,
+                                          TravelStyle travelStyle, BudgetLevel budgetLevel) {
         Document queryDoc = new Document();
 
         if (query != null && !query.isEmpty())
             queryDoc.append("name", new Document("$regex", query).append("$options", "i"));
 
         if (continent != null)
-            queryDoc.append("location.continent", continent);
+            queryDoc.append("location.continent", continent.name());
+
+        if (tag != null && !tag.isBlank()) {
+            queryDoc.append("official_tags", tag);
+        }
 
         if (travelStyle != null)
-            queryDoc.append("compatible_styles", travelStyle);
+            queryDoc.append("compatible_styles", travelStyle.name());
 
         if (budgetLevel != null)
-            queryDoc.append("budget_level", budgetLevel);
+            queryDoc.append("budget_level", budgetLevel.name());
 
         return find(queryDoc).list();
     }

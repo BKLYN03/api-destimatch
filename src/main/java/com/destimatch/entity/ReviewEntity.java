@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @MongoEntity(collection = "reviews")
 @Getter
@@ -17,11 +20,11 @@ import java.time.Instant;
 @NoArgsConstructor
 public class ReviewEntity extends PanacheMongoEntity {
 
-    @BsonProperty("author_pseudo")
+    @BsonProperty("author")
     private String author;
 
-    @BsonProperty("user_id")
-    private String userId;
+    @BsonProperty("user_email")
+    private String userEmail;
 
     @BsonProperty("destination_id")
     private String destinationId;
@@ -34,4 +37,10 @@ public class ReviewEntity extends PanacheMongoEntity {
 
     @BsonProperty("creation_date")
     private Instant creationDate = Instant.now();
+
+    @BsonProperty("aspect_sentiments")
+    private Map<String, String> aspectSentiments = new HashMap<>();
+
+    @BsonProperty("ai_keywords")
+    private List<String> aiKeywords;
 }

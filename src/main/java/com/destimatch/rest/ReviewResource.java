@@ -36,8 +36,8 @@ public class ReviewResource {
     @DELETE
     @Path("/{reviewId}")
     @RolesAllowed("admin")
-    public Response deleteReview(@PathParam("reviewId") String destinationId) {
-        reviewService.deleteReview(destinationId);
+    public Response deleteReview(@PathParam("reviewId") String reviewId) {
+        reviewService.deleteReview(reviewId);
         return Response.status(Response.Status.NO_CONTENT).entity("L'avis a bien été supprimé.").build();
     }
 }

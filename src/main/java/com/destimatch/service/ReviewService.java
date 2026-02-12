@@ -10,6 +10,7 @@ import com.destimatch.entity.UserEntity;
 import com.destimatch.repository.DestinationRepository;
 import com.destimatch.repository.ReviewRepository;
 import com.destimatch.repository.UserRepository;
+import com.destimatch.service.ai.GeminiSentimentAnalysisService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
@@ -28,12 +29,18 @@ public class ReviewService {
     DestinationRepository destinationRepository;
     @Inject
     UserRepository userRepository;
+    @Inject
+    GeminiSentimentAnalysisService sentimentAnalysisService;
+    @Inject
+    DestinationService destinationService;
 
     public void addReview(String userEmail, String destinationId, AddReviewRequest addReviewRequest) {
         UserEntity user = userRepository.find("email", userEmail).firstResult();
+        if (user == null)
+            throw new NotFoundException("Utilisateur introuvable.");
 
         // On compte combien d'avis cet utilisateur a déjà mis sur cette destination
-        long existingReviews = reviewRepository.count("destinationId = ?1 and userId = ?2", destinationId, user.id.toString());
+        long existingReviews = reviewRepository.count("destinationId = ?1 and userEmail = ?2", destinationId, userEmail);
         if (existingReviews > 0)
             throw new WebApplicationException("Vous avez déjà noté cette destination.", 409);
 
@@ -43,13 +50,20 @@ public class ReviewService {
 
         ReviewEntity review = new ReviewEntity();
         review.setAuthor(user.getName());
-        review.setUserId(user.id.toString());
+        review.setUserEmail(userEmail);
         review.setDestinationId(destinationId);
         review.setRating(addReviewRequest.getRating());
         review.setContent(addReviewRequest.getContent());
 
+        if (review.getContent() != null && !review.getContent().isBlank()) {
+            var analysis = sentimentAnalysisService.analyze(review.getContent());
+            review.setAspectSentiments(analysis.aspects());
+            review.setAiKeywords(analysis.keywords());
+        }
+
         reviewRepository.persist(review);
         updateDestinationStats(destination, addReviewRequest.getRating());
+        destinationService.updateDestinationAiStats(destinationId);
     }
 
     private void updateDestinationStats(DestinationEntity dest, int newRating) {

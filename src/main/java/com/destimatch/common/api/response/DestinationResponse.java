@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -19,8 +20,10 @@ public class DestinationResponse {
     private List<String> images;
     private Location location;
     private List<String> officialTags;
-    private Map<String, Double> aiTags;
-    private String aiSummary;
+    private Double aiScoreCleanliness;
+    private Double aiScoreVibe;
+    private Double aiScorePrice;
+    private Set<String> communityTags;
     private Double averageDailyCost;
     private String budgetLevel;
     private Double rating;

@@ -8,10 +8,7 @@ import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.*;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @MongoEntity(collection = "destinations")
 @Getter
@@ -55,9 +52,15 @@ public class DestinationEntity extends PanacheMongoEntity {
     @BsonProperty("review_count")
     private Integer reviewCount = 0;
 
-    @BsonProperty("ai_tags")
-    private Map<String, Double> aiTags = new HashMap<>();
+    @BsonProperty("ai_score_cleanliness")
+    public Double aiScoreCleanliness = 0.0;
 
-    @BsonProperty("ai_summary")
-    private String aiSummary;
+    @BsonProperty("ai_score_vibe")
+    public Double aiScoreVibe = 0.0;
+
+    @BsonProperty("ai_score_price")
+    public Double aiScorePrice = 0.0;
+
+    @BsonProperty("community_tags")
+    public Set<String> communityTags = new HashSet<>();
 }

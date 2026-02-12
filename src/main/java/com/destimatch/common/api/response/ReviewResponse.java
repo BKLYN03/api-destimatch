@@ -4,13 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
 public class ReviewResponse {
     private String id;
-    private String authorPseudo; // Son nom
+    private String author; // Son nom
     private Integer rating;
     private String content;
     private Instant date;
+    private Map<String, String> aspectSentiments;
+    private List<String> aiKeywords;
 }
