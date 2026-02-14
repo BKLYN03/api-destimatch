@@ -2,7 +2,6 @@ package com.destimatch.service;
 
 import com.destimatch.common.api.request.AddReviewRequest;
 import com.destimatch.common.api.response.ReviewResponse;
-import com.destimatch.common.exception.ConflictException;
 import com.destimatch.converter.ReviewConverter;
 import com.destimatch.entity.DestinationEntity;
 import com.destimatch.entity.ReviewEntity;
@@ -11,6 +10,7 @@ import com.destimatch.repository.DestinationRepository;
 import com.destimatch.repository.ReviewRepository;
 import com.destimatch.repository.UserRepository;
 import com.destimatch.service.ai.GeminiSentimentAnalysisService;
+import com.destimatch.service.ai.SentimentAnalysisService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
@@ -39,8 +39,7 @@ public class ReviewService {
         if (user == null)
             throw new NotFoundException("Utilisateur introuvable.");
 
-        // On compte combien d'avis cet utilisateur a déjà mis sur cette destination
-        long existingReviews = reviewRepository.count("destinationId = ?1 and userEmail = ?2", destinationId, userEmail);
+        long existingReviews = reviewRepository.count("destinationId = ?1 and userEmail = ?2", destinationId, userEmail);        
         if (existingReviews > 0)
             throw new WebApplicationException("Vous avez déjà noté cette destination.", 409);
 
@@ -56,14 +55,27 @@ public class ReviewService {
         review.setContent(addReviewRequest.getContent());
 
         if (review.getContent() != null && !review.getContent().isBlank()) {
-            var analysis = sentimentAnalysisService.analyze(review.getContent());
-            review.setAspectSentiments(analysis.aspects());
-            review.setAiKeywords(analysis.keywords());
+            try {
+                var analysis = sentimentAnalysisService.analyze(review.getContent());
+                
+                review.setAspectSentiments(analysis.aspects());
+                review.setAiKeywords(analysis.keywords());
+                
+                System.out.println("✅ Analyse IA réussie pour l'avis de " + userEmail);
+            } catch (Exception e) {
+                System.err.println("❌ ÉCHEC ANALYSE IA : ");
+                e.printStackTrace(); 
+            }
         }
 
         reviewRepository.persist(review);
         updateDestinationStats(destination, addReviewRequest.getRating());
-        destinationService.updateDestinationAiStats(destinationId);
+        
+        try {
+            destinationService.updateDestinationAiStats(destinationId);
+        } catch (Exception e) {
+            System.err.println("Impossible de mettre à jour les stats destination : " + e.getMessage());
+        }
     }
 
     private void updateDestinationStats(DestinationEntity dest, int newRating) {

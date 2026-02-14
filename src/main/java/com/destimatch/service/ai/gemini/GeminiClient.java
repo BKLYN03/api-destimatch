@@ -5,9 +5,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
-@RegisterRestClient(configKey = "gemini-app")
+@RegisterRestClient(baseUri = "https://generativelanguage.googleapis.com")
 public interface GeminiClient {
+
     @POST
-    @Path("/v1beta/models/gemini-1.5-flash:generateContent")
+    @Path("/v1beta/models/gemini-flash-latest:generateContent")
     GeminiResponse generateContent(@QueryParam("key") String apiKey, GeminiRequest request);
 }

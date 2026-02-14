@@ -3,7 +3,10 @@ package com.destimatch.service.ai;
 import com.destimatch.service.ai.gemini.GeminiClient;
 import com.destimatch.service.ai.gemini.GeminiRequest;
 import com.destimatch.service.ai.gemini.GeminiResponse;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -40,16 +43,25 @@ public class GeminiSentimentAnalysisService implements SentimentAnalysisService 
 
         try {
             GeminiResponse response = geminiClient.generateContent(apiKey, GeminiRequest.of(prompt));
-            String json = response.getText().replace("```json", "").replace("```", "").trim();
-            AiResponse mapped =  objectMapper.readValue(json, AiResponse.class);
+            
+            String json = response.getText();
+            if (json.contains("```json")) {
+                json = json.replace("```json", "").replace("```", "");
+            }
+            json = json.trim();
+
+            AiResponse mapped = objectMapper.readValue(json, AiResponse.class);
             return new AnalysisResult(mapped.aspects, mapped.keywords);
+
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println("ERREUR GEMINI : " + e.getMessage());
             return new AnalysisResult(new HashMap<>(), new ArrayList<>());
         }
     }
 
-    private static class AiResponse {
+    @RegisterForReflection
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AiResponse {
         public Map<String, String> aspects = new HashMap<>();
         public List<String> keywords = new ArrayList<>();
     }

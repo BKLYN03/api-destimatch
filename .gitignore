@@ -32,9 +32,6 @@ nb-configuration.xml
 *.swp
 *.swo
 
-# On ignore les fichiers secrets
-.env
-
 # patch
 *.orig
 *.rej
