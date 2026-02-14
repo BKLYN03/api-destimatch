@@ -9,7 +9,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.Collections;
 import java.util.List;
 
 @Path("/api/tags")

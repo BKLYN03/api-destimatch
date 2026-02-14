@@ -10,7 +10,6 @@ import com.destimatch.repository.DestinationRepository;
 import com.destimatch.repository.ReviewRepository;
 import com.destimatch.repository.UserRepository;
 import com.destimatch.service.ai.GeminiSentimentAnalysisService;
-import com.destimatch.service.ai.SentimentAnalysisService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;

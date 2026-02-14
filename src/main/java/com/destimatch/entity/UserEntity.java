@@ -4,7 +4,6 @@ import com.destimatch.common.utils.BudgetLevel;
 import com.destimatch.common.utils.Continent;
 import com.destimatch.common.utils.Location;
 import com.destimatch.common.utils.TravelStyle;
-import com.mongodb.lang.Nullable;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.AllArgsConstructor;

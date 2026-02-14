@@ -6,7 +6,6 @@ import io.smallrye.jwt.build.Jwt;
 
 import java.time.Duration;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 public class Helpers {

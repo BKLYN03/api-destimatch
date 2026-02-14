@@ -11,8 +11,6 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.quarkus.mongodb.panache.PanacheMongoEntityBase.mongoCollection;
-
 @ApplicationScoped
 public class DestinationRepository implements PanacheMongoRepository<DestinationEntity> {
 

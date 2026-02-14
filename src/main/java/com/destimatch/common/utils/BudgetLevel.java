@@ -1,7 +1,6 @@
 package com.destimatch.common.utils;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public enum BudgetLevel {
