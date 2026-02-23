@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,7 +16,7 @@ public class UserResponse {
     private String id;
     private String name;
     private String email;
-    private String phone;
+    // private String phone;
     private Location location;
     private List<String> roles;
     private List<String> preferences;

@@ -12,7 +12,6 @@ import com.destimatch.repository.UserRepository;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.NotAuthorizedException;
 import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -33,7 +32,7 @@ public class UserService {
     public String authenticate(String email, String password) {
         var foundUser = userRepository.find("email", email).firstResult();
         if (foundUser == null || !BcryptUtil.matches(password, foundUser.getPassword()))
-            throw new NotAuthorizedException("Invalid credentials.");
+            throw new NotFoundException("Email ou mot de passe invalide.");
 
         return Helpers.generateUserJWT(foundUser);
     }
@@ -50,7 +49,7 @@ public class UserService {
         user.setName(Helpers.cleanSpaces(request.getName()));
         user.setEmail(request.getEmail());
         user.setPassword(BcryptUtil.bcryptHash(request.getPassword()));
-        user.setPhone(request.getPhone());
+        // user.setPhone(request.getPhone());
         user.setLocation(request.getLocation());
 
         user.setPreferences(new ArrayList<>());
@@ -74,9 +73,6 @@ public class UserService {
         // Infos personnelles
         if (request.getName() != null && !request.getName().isBlank()) {
             user.setName(Helpers.cleanSpaces(request.getName()));
-        }
-        if (request.getPhone() != null) {
-            user.setPhone(request.getPhone());
         }
         if (request.getLocation() != null) {
             user.setLocation(request.getLocation());

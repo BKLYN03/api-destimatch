@@ -28,23 +28,23 @@ public class Helpers {
 
     public static void validateUserFullName(String fullName) {
         if (fullName == null)
-            throw new ValidationException("Full name cannot be null.");
+            throw new ValidationException("Le nom ne peut pas être vide.");
 
         String newFullName = cleanSpaces(fullName);
 
         if (newFullName.isEmpty())
-            throw new ValidationException("Full name cannot be empty.");
+            throw new ValidationException("Le nom ne peut pas être vide.");
 
         if (newFullName.length() < 2)
-            throw new ValidationException("Full name must be at least 2 characters long.");
+            throw new ValidationException("Le nom doit contenir au moins 02 caractères.");
 
         if (!Pattern.matches("^[a-zA-ZÀ-ÿ][a-zA-ZÀ-ÿ' \\-]+$", newFullName))
-            throw new ValidationException("Full name contains invalid characters.");
+            throw new ValidationException("Le nom donné contient des caractères invalides.");
     }
 
     public static void validatePassword(String password) {
         if (password == null || password.isEmpty()) {
-            throw new ValidationException("Password cannot be empty.");
+            throw new ValidationException("Le mot de passe ne peut pas être vide.");
         }
 
         String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,20}$";

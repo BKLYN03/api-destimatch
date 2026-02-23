@@ -15,7 +15,7 @@ public class NewUserRequest {
     private String name;
     private String email;
     private String password;
-    private String phone;
+    // private String phone;
     private Location location;
 
     @BsonProperty("admin_secret")

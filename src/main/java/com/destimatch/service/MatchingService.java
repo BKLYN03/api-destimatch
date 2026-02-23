@@ -43,7 +43,7 @@ public class MatchingService {
                     int score = calculateScore(user, dest, safeCriteria);
                     return new DestinationMatchResponse(DestinationConverter.toResponse(dest), score);
                 })
-                .sorted(Comparator.comparingInt(DestinationMatchResponse::getMatchScore).reversed()) // Le plus haut score en premier
+                .sorted(Comparator.comparingInt(DestinationMatchResponse::getMatchScore).reversed())
                 .collect(Collectors.toList());
     }
 

@@ -12,6 +12,7 @@ public class ReviewConverter {
         return new ReviewResponse(
                 reviewEntity.id.toString(),
                 reviewEntity.getAuthor(),
+                reviewEntity.getUserEmail(),
                 reviewEntity.getRating(),
                 reviewEntity.getContent(),
                 reviewEntity.getCreationDate(),

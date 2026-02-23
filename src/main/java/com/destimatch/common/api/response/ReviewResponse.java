@@ -12,6 +12,7 @@ import java.util.Map;
 public class ReviewResponse {
     private String id;
     private String author; // Son nom
+    private String userEmail;
     private Integer rating;
     private String content;
     private Instant date;

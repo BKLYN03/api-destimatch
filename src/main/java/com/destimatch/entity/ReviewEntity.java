@@ -35,7 +35,7 @@ public class ReviewEntity extends PanacheMongoEntity {
     @BsonProperty("content")
     private String content;
 
-    @BsonProperty("creation_date")
+    @BsonProperty("date")
     private Instant creationDate = Instant.now();
 
     @BsonProperty("aspect_sentiments")

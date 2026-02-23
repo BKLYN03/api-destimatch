@@ -13,7 +13,7 @@ public class UserConverter {
                 entity.id.toString(),
                 entity.getName(),
                 entity.getEmail(),
-                entity.getPhone(),
+                // entity.getPhone(),
                 entity.getLocation(),
                 entity.getRoles(),
                 entity.getPreferences(),

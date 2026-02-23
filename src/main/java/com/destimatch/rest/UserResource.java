@@ -5,7 +5,9 @@ import com.destimatch.common.api.request.NewUserRequest;
 import com.destimatch.common.api.request.UpdatePreferencesRequest;
 import com.destimatch.common.api.request.UpdateProfileRequest;
 import com.destimatch.common.api.response.LoginResponse;
+import com.destimatch.common.exception.ConflictException;
 import com.destimatch.common.exception.ValidationException;
+import com.destimatch.common.utils.ErrorInfo;
 import com.destimatch.common.utils.Helpers;
 import com.destimatch.converter.UserConverter;
 import com.destimatch.entity.UserEntity;
@@ -39,11 +41,19 @@ public class UserResource {
     @Path("/auth/login")
     public Response login(LoginRequest loginRequest) {
         if (loginRequest == null)
-            throw new ValidationException("Email or password invalid.");
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorInfo("Requête invalide."))
+                    .build();
 
-        String token = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
-        UserEntity user = userService.getUserByEmail(loginRequest.getEmail());
-        return Response.ok(new LoginResponse(token, UserConverter.toResponse(user))).build();
+        try {
+            String token = userService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
+            UserEntity user = userService.getUserByEmail(loginRequest.getEmail());
+            return Response.ok(new LoginResponse(token, UserConverter.toResponse(user))).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .entity(new ErrorInfo(e.getMessage()))
+                .build();
+        }
     }
 
     @GET
@@ -61,21 +71,34 @@ public class UserResource {
     @Path("/register")
     public Response createUser(NewUserRequest newRequest) {
         if (newRequest == null)
-            throw new ValidationException("The request cannot be null.");
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorInfo("Requête invalide."))
+                    .build();
 
-        var user = userService.createUser(newRequest);
-        String token = Helpers.generateUserJWT(user);
-        LoginResponse loginResponse = new LoginResponse(token, UserConverter.toResponse(user));
+        try {
+            var user = userService.createUser(newRequest);
+            String token = Helpers.generateUserJWT(user);
+            LoginResponse loginResponse = new LoginResponse(token, UserConverter.toResponse(user));
 
-        return Response.status(Response.Status.CREATED)
+            return Response.status(Response.Status.CREATED)
                 .entity(loginResponse)
                 .build();
+        } catch (ConflictException | ValidationException e) {
+            return Response.status(Response.Status.CONFLICT)
+                .entity(new ErrorInfo(e.getMessage()))
+                .build();
+        }
     }
 
     @PUT
     @Path("/profile")
     @RolesAllowed({"user", "admin"})
     public Response updateProfile(UpdateProfileRequest updateProfileRequest) {
+        if (updateProfileRequest == null)
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorInfo("Requête invalide."))
+                    .build();
+
         String email = jwt.getName();
         UserEntity updatedUser = userService.updateProfile(email, updateProfileRequest);
         return Response.ok(UserConverter.toResponse(updatedUser)).build();
@@ -85,18 +108,20 @@ public class UserResource {
     @Path("/preferences")
     @RolesAllowed({"user", "admin"})
     public Response updatePreferences(UpdatePreferencesRequest request) {
-        String email = jwt.getName();
-        if (email == null)
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+        if (request == null)
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorInfo("Requête invalide."))
+                    .build();
 
         try {
+            String email = jwt.getName();
             userService.updateUserPreferences(email, request);
             var updatedUser = userService.getUserByEmail(email);
             return Response.ok(UserConverter.toResponse(updatedUser)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"error\": \"" + e.getMessage() + "\"}")
-                    .build();
+                .entity(new ErrorInfo(e.getMessage()))
+                .build();
         }
     }
 

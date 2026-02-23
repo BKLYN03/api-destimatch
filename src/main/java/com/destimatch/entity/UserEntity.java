@@ -29,8 +29,8 @@ public class UserEntity extends PanacheMongoEntity {
     private String email; // Devra être unique
     @BsonProperty("hashed_password")
     private String password; // Hashed
-    @BsonProperty("phone")
-    private String phone;
+    // @BsonProperty("phone")
+    // private String phone;
 
     // Localisation et contexte géographique
     @BsonProperty("location")
