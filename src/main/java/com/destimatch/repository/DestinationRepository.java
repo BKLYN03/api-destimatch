@@ -23,6 +23,10 @@ public class DestinationRepository implements PanacheMongoRepository<Destination
                 .into(new ArrayList<>());
     }
 
+    public List<DestinationEntity> getWithPage(int pageIndex, int pageSize) {
+        return findAll().page(pageIndex, pageSize).list();
+    }
+
     public List<DestinationEntity> search(String query, Continent continent, String tag,
                                           TravelStyle travelStyle, BudgetLevel budgetLevel) {
         Document queryDoc = new Document();

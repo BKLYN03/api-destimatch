@@ -56,6 +56,13 @@ public class DestinationService {
                 .collect(Collectors.toList());
     }
 
+    public List<DestinationResponse> getDestinationsWithPagination(int pageIndex, int pageSize) {
+        return destinationRepository.getWithPage(pageIndex, pageSize)
+            .stream()
+            .map(DestinationConverter::toResponse)
+            .collect(Collectors.toList());
+    } 
+
     public List<String> getAvailableTags() {
         List<String> tags = destinationRepository.getAllDistinctTags();
 

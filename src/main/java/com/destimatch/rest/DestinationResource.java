@@ -27,8 +27,12 @@ public class DestinationResource {
     JsonWebToken jwt;
 
     @GET
-    public Response getAllDestinations() {
-        try  {
+    public Response getAllDestinations(@QueryParam("page") Integer page) {
+        if (page != null) {
+            return Response.ok(destinationService.getDestinationsWithPagination(page, 6)).build();
+        }
+
+        try {
             List<DestinationResponse> destinations = destinationService.getAllDestinations();
             return Response.ok(destinations).build();
         } catch (Exception e) {

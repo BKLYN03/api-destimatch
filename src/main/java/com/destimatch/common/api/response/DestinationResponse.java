@@ -1,13 +1,11 @@
 package com.destimatch.common.api.response;
 
-import com.destimatch.common.utils.BudgetLevel;
 import com.destimatch.common.utils.Location;
 import com.destimatch.common.utils.TravelStyle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Data
