@@ -13,6 +13,8 @@ import io.quarkus.elytron.security.common.BcryptUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPassword(BcryptUtil.bcryptHash(request.getPassword()));
         // user.setPhone(request.getPhone());
+
         user.setLocation(request.getLocation());
 
         user.setPreferences(new ArrayList<>());

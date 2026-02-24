@@ -11,6 +11,7 @@ import com.destimatch.common.utils.ErrorInfo;
 import com.destimatch.common.utils.Helpers;
 import com.destimatch.converter.UserConverter;
 import com.destimatch.entity.UserEntity;
+import com.destimatch.service.LocationValidationService;
 import com.destimatch.service.UserService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -26,6 +27,8 @@ public class UserResource {
 
     @Inject
     UserService userService;
+    @Inject
+    LocationValidationService locationValidationService;
     @Inject
     JsonWebToken jwt;
 
@@ -76,6 +79,14 @@ public class UserResource {
                     .build();
 
         try {
+            boolean isLocationValid = locationValidationService
+                .isValidLocation(newRequest.getLocation().getCity(), newRequest.getLocation().getCountry());
+            if (!isLocationValid) {
+                return Response.status(400)
+                    .entity(new ErrorInfo("La ville de " + newRequest.getLocation().getCity() + " ne semble pas se trouver en/au " + newRequest.getLocation().getCountry() + ". Veuillez vérifier s'il vous plaît."))
+                    .build();
+            }
+
             var user = userService.createUser(newRequest);
             String token = Helpers.generateUserJWT(user);
             LoginResponse loginResponse = new LoginResponse(token, UserConverter.toResponse(user));
