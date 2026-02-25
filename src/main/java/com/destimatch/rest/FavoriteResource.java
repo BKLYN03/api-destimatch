@@ -1,5 +1,6 @@
 package com.destimatch.rest;
 
+import com.destimatch.common.utils.ErrorInfo;
 import com.destimatch.service.FavoriteService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -28,15 +29,30 @@ public class FavoriteResource {
     @POST
     @RolesAllowed("user")
     public Response addFavorite(@QueryParam("destination_id") String destinationId) {
-        favoriteService.addFavorite(jwt.getName(), destinationId);
-        return Response.status(Response.Status.CREATED)
-                .entity("{\"message\": \"Ajouté aux favoris\"}").build();
+        try {
+            favoriteService.addFavorite(jwt.getName(), destinationId);
+            return Response.status(Response.Status.CREATED)
+                .entity("{\"message\": \"Ajouté aux favoris\"}")
+                .build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .entity(new ErrorInfo(e.getMessage()))
+                .build();
+        }
     }
 
     @DELETE
     @RolesAllowed("user")
     public Response removeFavorite(@QueryParam("destination_id") String destinationId) {
-        favoriteService.removeFavorite(jwt.getName(), destinationId);
-        return Response.ok("{\"message\": \"Retiré des favoris\"}").build();
+        try {
+            favoriteService.removeFavorite(jwt.getName(), destinationId);
+            return Response.status(Response.Status.NO_CONTENT)
+                .entity("{\"message\": \"Retiré des favoris\"}")
+                .build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .entity(new ErrorInfo(e.getMessage()))
+                .build();
+        }
     }
 }
