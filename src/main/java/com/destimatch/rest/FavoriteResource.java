@@ -20,6 +20,18 @@ public class FavoriteResource {
     FavoriteService favoriteService;
 
     @GET
+    @Path("/most-liked-continents")
+    public Response getMostLikedContinentsDesc() {
+        try {
+            return Response.ok(favoriteService.getTopContinents()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(new ErrorInfo(e.getMessage()))
+                .build();
+        }
+    }
+
+    @GET
     @RolesAllowed("user")
     public Response getMyFavorites() {
         String email = jwt.getName();

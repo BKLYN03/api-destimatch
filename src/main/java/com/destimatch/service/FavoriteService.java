@@ -13,7 +13,9 @@ import jakarta.ws.rs.NotFoundException;
 import org.bson.types.ObjectId;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -25,6 +27,24 @@ public class FavoriteService {
     FavoriteRepository favoriteRepository;
     @Inject
     DestinationRepository destinationRepository;
+
+    public List<String> getTopContinents() {
+        List<FavoriteEntity> allFavs = favoriteRepository.listAll();
+
+        Map<String, Long> continentCounts = allFavs.stream()
+            .map(fav -> destinationRepository.findById(new ObjectId(fav.getDestinationId())))
+            .filter(Objects::nonNull)
+            .map(dest -> dest.getLocation().getContinent())
+            .filter(Objects::nonNull)
+            .map(String::valueOf)
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        return continentCounts.entrySet().stream()
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+            .limit(4)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+    }
 
     public List<DestinationResponse> getFavoriteDestinations(String email) {
         UserEntity user = userRepository.find("email", email).firstResult();
