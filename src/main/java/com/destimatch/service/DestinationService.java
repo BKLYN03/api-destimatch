@@ -148,11 +148,11 @@ public class DestinationService {
 
         dest.communityTags.clear();
         if (dest.aiScoreCleanliness > 80)
-            dest.communityTags.add("Hygiène Top");
+            dest.communityTags.add("hygiene-top");
         if (dest.aiScoreVibe < 30)
-            dest.communityTags.add("Bruyant");
+            dest.communityTags.add("bruyant");
         if (dest.aiScorePrice > 80)
-            dest.communityTags.add("Bon Plan");
+            dest.communityTags.add("bon-plan");
 
         destinationRepository.update(dest);
     }

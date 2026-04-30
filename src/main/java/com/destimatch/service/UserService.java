@@ -3,10 +3,14 @@ package com.destimatch.service;
 import com.destimatch.common.api.request.NewUserRequest;
 import com.destimatch.common.api.request.UpdatePreferencesRequest;
 import com.destimatch.common.api.request.UpdateProfileRequest;
+import com.destimatch.common.api.response.UserResponse;
 import com.destimatch.common.exception.ConflictException;
 import com.destimatch.common.exception.ValidationException;
 import com.destimatch.common.utils.Continent;
 import com.destimatch.common.utils.Helpers;
+import com.destimatch.converter.DestinationConverter;
+import com.destimatch.converter.UserConverter;
+import com.destimatch.entity.DestinationEntity;
 import com.destimatch.entity.UserEntity;
 import com.destimatch.repository.UserRepository;
 import io.quarkus.elytron.security.common.BcryptUtil;
@@ -36,6 +40,13 @@ public class UserService {
             throw new NotFoundException("Email ou mot de passe invalide.");
 
         return Helpers.generateUserJWT(foundUser);
+    }
+
+    public List<UserResponse> getUsers() {
+        List<UserEntity> destinations = userRepository.listAll();
+        return destinations.stream()
+                .map(UserConverter::toResponse)
+                .collect(Collectors.toList());
     }
 
     public UserEntity createUser(NewUserRequest request) {

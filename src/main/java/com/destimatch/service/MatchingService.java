@@ -16,6 +16,8 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 @ApplicationScoped
 public class MatchingService {
@@ -60,7 +62,7 @@ public class MatchingService {
     private int calculateScore(UserEntity user, DestinationEntity dest, SearchCriteria criteria) {
         double totalScore = 0;
 
-        totalScore += calculateTagScore(user.getPreferences(), dest.getOfficialTags());
+        totalScore += calculateTagScore(user.getPreferences(), dest);
 
         BudgetLevel targetBudget = (criteria.getBudget() != null) ? criteria.getBudget() : user.getBudgetLevel();
         totalScore += calculateBudgetScore(targetBudget, dest.getAverageDailyCost());
@@ -74,17 +76,31 @@ public class MatchingService {
         if (dest.getRating() != null)
             totalScore += dest.getRating() * 2;
 
-        return (int) Math.round(totalScore);
+        totalScore += calculateAiQualityBonus(dest, user);
+
+        return (int) Math.round(Math.clamp(totalScore, 0.0, 100.0));
     }
 
-    private double calculateTagScore(List<String> userTags, List<String> destTags) {
+    private double calculateTagScore(List<String> userTags, DestinationEntity dest) {
         if (userTags == null || userTags.isEmpty())
             return 10.0;
-        if (destTags == null || destTags.isEmpty())
+
+        Set<String> allDestinationTags = new HashSet<>();
+
+        if (dest.getOfficialTags() != null) {
+            dest.getOfficialTags().forEach(tag -> allDestinationTags.add(tag.toLowerCase()));
+        }
+
+        if (dest.getCommunityTags() != null) {
+            dest.getCommunityTags().forEach(tag -> allDestinationTags.add(tag.toLowerCase()));
+        }
+
+        if (allDestinationTags.isEmpty())
             return 0.0;
 
         long commonTags = userTags.stream()
-                .filter(tag -> destTags.stream().anyMatch(dt -> dt.equalsIgnoreCase(tag)))
+                .map(String::toLowerCase)
+                .filter(allDestinationTags::contains)
                 .count();
 
         double ratio = (double) commonTags / userTags.size();
@@ -107,12 +123,11 @@ public class MatchingService {
                 maxBudget = 400.0;
                 break;
             case LUXURY:
-                return 30.0; // Le luxe n'a pas de limite
+                return 30.0;
             default:
                 return 20.0;
         }
 
-        // Si le coût est dans le budget → 100% des points (30 points)
         if (destCost <= maxBudget)
             return 30.0;
 
@@ -135,5 +150,31 @@ public class MatchingService {
             return 10.0;
 
         return bestMonths.contains(monthToCheck) ? 15.0 : 0.0;
+    }
+
+    private double calculateAiQualityBonus(DestinationEntity dest, UserEntity user) {
+        if (dest.getReviewCount() == null || dest.getReviewCount() < 3) {
+            return 0.0;
+        }
+
+        double bonus = 0.0;
+
+        if (dest.getAiScoreCleanliness() != null && dest.getAiScoreCleanliness() > 75.0) {
+            bonus += 5.0; 
+        } else if (dest.getAiScoreCleanliness() != null && dest.getAiScoreCleanliness() < 40.0) {
+            bonus -= 10.0;
+        }
+
+        if (dest.getAiScorePrice() != null && dest.getAiScorePrice() > 80.0) {
+            if (user.getBudgetLevel() == BudgetLevel.ECO || user.getBudgetLevel() == BudgetLevel.MODERATE) {
+                bonus += 5.0;
+            }
+        }
+
+        if (dest.getAiScoreVibe() != null && dest.getAiScoreVibe() > 80.0) {
+            bonus += 3.0;
+        }
+
+        return Math.clamp(bonus, -10.0, 15.0);
     }
 }

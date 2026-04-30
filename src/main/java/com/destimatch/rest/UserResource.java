@@ -4,7 +4,9 @@ import com.destimatch.common.api.request.LoginRequest;
 import com.destimatch.common.api.request.NewUserRequest;
 import com.destimatch.common.api.request.UpdatePreferencesRequest;
 import com.destimatch.common.api.request.UpdateProfileRequest;
+import com.destimatch.common.api.response.DestinationResponse;
 import com.destimatch.common.api.response.LoginResponse;
+import com.destimatch.common.api.response.UserResponse;
 import com.destimatch.common.exception.ConflictException;
 import com.destimatch.common.exception.ValidationException;
 import com.destimatch.common.utils.ErrorInfo;
@@ -19,6 +21,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import java.util.List;
 
 @Path("/api/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,6 +42,17 @@ public class UserResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String checkAdminAccess() {
         return "Succès: Tu as accès à la zone Admin!";
+    }
+
+    @GET
+    @RolesAllowed("admin")
+    public Response getAllUsers() {
+        try {
+            List<UserResponse> users = userService.getUsers();
+            return Response.ok(users).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(e.getMessage()).build();
+        }
     }
 
     @POST
